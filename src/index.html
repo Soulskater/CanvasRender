@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Canvas Render
+    </title>
+
+    <link rel="stylesheet" type="text/css" href="css/home.css">
+
+    <script type="text/javascript" src="packages/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="packages/stats.js/build/stats.min.js"></script>
+    <script type="text/javascript" src="packages/linq-js/dist/linq.js"></script>
+    <script type="text/javascript" src="js/lib/StackBlur.js"></script>
+
+    <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
+    <script type="text/javascript" src="js/modules/utility/eventmanager.js"></script>
+    <script type="text/javascript" src="js/modules/utility/general.js"></script>
+    <script type="text/javascript" src="js/modules/utility/string.js"></script>
+    <script type="text/javascript" src="js/modules/utility/graphics.js"></script>
+    <script type="text/javascript" src="js/modules/stage.js"></script>
+    <script type="text/javascript" src="js/modules/layer.js"></script>
+    <script type="text/javascript" src="js/modules/render.js"></script>
+    <script type="text/javascript" src="js/modules/filters.js"></script>
+    <script type="text/javascript" src="js/modules/transition.js"></script>
+    <script type="text/javascript" src="js/modules/object.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/line.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/image.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/sprite.js"></script>
+    <script type="text/javascript" src="js/modules/shapes/polygon.js"></script>
+    <script type="text/javascript" src="js/modules/animation.js"></script>
+    <script type="text/javascript" src="js/modules/game/physics.js"></script>
+    <script type="text/javascript" src="js/modules/game/polygonCollision.js"></script>
+</head>
+<body>
+<div id="viewport">
+</div>
+<script>
+    function transition(layer) {
+        //
+        //In kg
+        var m1 = 2;
+        var m2 = 0.5;
+        //
+        //In pixel/s
+        var v1 = new RenderJs.Vector(377.95275591, 0);
+        var v2 = new RenderJs.Vector(-377.795275591, 0);
+        var circle1 = new RenderJs.Canvas.Shapes.Arc({
+            x: 0,
+            y: 280,
+            radius: 100,
+            sAngle: 0,
+            eAngle: 360,
+            fillColor: "#333",
+            collision: true
+        });
+        circle1.v = v1;
+        circle1.pos = new RenderJs.Vector(0, 280);
+        circle1.prevPos = new RenderJs.Vector(0, 280);
+        var circle2 = new RenderJs.Canvas.Shapes.Arc({
+            x: 1150,
+            y: 250,
+            radius: 25,
+            sAngle: 0,
+            eAngle: 360,
+            fillColor: "green",
+            collision: true
+        });
+        circle2.v = v2;
+        circle1.w1 = 0;
+        circle2.w2 = 0;
+        layer.addObject(circle1);
+        layer.addObject(circle2);
+        circle1.on("collision", function () {
+            //
+            //Perfectly unelastic movement
+            var n = new RenderJs.Vector(circle2.getCenter().x - circle1.getCenter().x, circle2.getCenter().y - circle1.getCenter().y);
+            var un = new RenderJs.Vector(n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)));
+            var ut = new RenderJs.Vector(-un.y, un.x);
+            var v1n = un.dot(v1);
+            var v2n = un.dot(v2);
+            var v1t = ut.dot(v1);
+            var v2t = ut.dot(v2);
+
+            var v11n = ((m1 - m2) * v1n + (2 * m2 * v2n)) / (m1 + m2);
+            var vv1n = un.scale(v11n);
+            var vv1t = ut.scale(v1t);
+            circle1.v = vv1n.add(vv1t);
+
+            //
+            //Angular velocity
+            var r = Math.abs(circle1.getCenter().y - circle2.getCenter().y);
+            var l = (m1 + (m2 / 3)) * Math.pow(circle1.radius, 2);
+            circle1.w1 = (m1 * v1.length() * circle1.radius) / l;
+            console.log("Angular velocity 1:", circle1.w1);
+            //console.log("Angular velocity 2:", w2);
+
+
+        });
+        circle2.on("collision", function () {
+            var n = new RenderJs.Vector(circle2.getCenter().x - circle1.getCenter().x, circle2.getCenter().y - circle1.getCenter().y);
+            var un = new RenderJs.Vector(n.x / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)), n.y / Math.sqrt(Math.pow(n.x, 2) + Math.pow(n.y, 2)));
+            var ut = new RenderJs.Vector(-un.y, un.x);
+            var v1n = un.dot(v1);
+            var v2n = un.dot(v2);
+            var v1t = ut.dot(v1);
+            var v2t = ut.dot(v2);
+
+            var v22n = ((m2 - m1) * v2n + (2 * m1 * v1n)) / (m1 + m2);
+            var vv2n = un.scale(v22n);
+            var vv2t = ut.scale(v2t);
+            circle2.v = vv2n.add(vv2t);
+
+            var r = Math.abs(circle1.getCenter().y - circle2.getCenter().y);
+            var l = (m1 + (m2 / 3)) * Math.pow(circle2.radius, 2);
+            circle2.w2 = (m1 * v2.length() * circle2.radius) / l;
+            console.log("Angular velocity 2:", circle2.w2);
+        });
+        var anim = new RenderJs.Canvas.Animation(function (frame) {
+            //Gravity ((9.78049 / 2) * Math.pow(frame.time / 1000, 2));
+            var gVec = new RenderJs.Vector(0, 9.78);
+            //circle1.v.set(circle1.v.add(gVec));
+
+            //r * (Math.sin(Utils.convertToRad(img.aangle))) + ox, r * (Math.cos(Utils.convertToRad(img.aangle))) + oy)
+            var acc = new RenderJs.Vector(0, 0.1);
+            //var newPos = circle1.pos.scale(2).sub(circle1.prevPos).add(acc);
+            //circle1.prevPos.set(circle1.pos);
+            //circle1.pos.set(newPos);
+            circle1.pos = circle1.pos.add(circle1.v.scale((frame.time - frame.lastTime) / 1000));
+            circle2.pos = circle2.pos.add(circle2.v.scale((frame.time - frame.lastTime) / 1000));
+
+            circle1.angle += (circle1.w1 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
+            circle2.angle += (circle2.w2 / (Math.PI / 180)) * ((frame.time - frame.lastTime) / 1000);
+        }, layer);
+        anim.start();
+    }
+
+    function sprite(llayer) {
+        var test = new RenderJs.Canvas.Shapes.Sprite({
+            url: "images/blob-sprite.png",
+            x: 100,
+            y: 100,
+            collision: true,
+            defAnimation: "idle",
+            animations: {
+                idle: [
+                    2, 2, 70, 119,
+                    71, 2, 74, 119,
+                    146, 2, 81, 119,
+                    226, 2, 76, 119
+                ],
+                punch: [
+                    2, 138, 74, 122,
+                    76, 138, 84, 122,
+                    346, 138, 120, 122
+                ]
+            },
+            frameCount: 7
+        });
+        llayer.addShape(test);
+        test.start();
+        $(document).click(function () {
+            test.animation("punch");
+        });
+    }
+
+    function polyTest(layer) {
+        var line = new RenderJs.Canvas.Shapes.Line({
+            x1: 400,
+            y1: 300,
+            x2: 450,
+            y2: 350,
+            color: "#333"
+        });
+
+        var arc = new RenderJs.Canvas.Shapes.Arc({
+            x: 20,
+            y: 30,
+            radius: 50,
+            color: "#333"
+        });
+
+        var arc2 = new RenderJs.Canvas.Shapes.Arc({
+            x: 200,
+            y: 300,
+            radius: 50,
+            color: "#333"
+        });
+
+        var poly = new RenderJs.Canvas.Shapes.Polygon({
+            x: 0,
+            y: 0,
+            points: [new RenderJs.Vector(330, 174),
+                new RenderJs.Vector(376, 148),
+                new RenderJs.Vector(390, 122),
+                new RenderJs.Vector(419, 142),
+                new RenderJs.Vector(392, 165),
+                new RenderJs.Vector(403, 214),
+                new RenderJs.Vector(360, 187)],
+            fillColor: "#333"
+        });
+        poly.makeCCW();
+        poly.subPolys = poly.decompose();
+        var poly2 = new RenderJs.Canvas.Shapes.Polygon({
+            x: 300,
+            y: 100,
+            points: [new RenderJs.Vector(100, 0),
+                new RenderJs.Vector(150, 50),
+                new RenderJs.Vector(100, 150),
+                new RenderJs.Vector(0, 100)],
+            fillColor: "#333"
+        });
+        //layer.addObject(arc);
+        //layer.addObject(arc2);
+        layer.addObject(poly);
+        layer.addObject(poly2);
+
+        layer.on("mousemove", function (evt, position) {
+            var velocity = new RenderJs.Vector(position.x - poly2.pos.x, position.y - poly2.pos.y);
+            //var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
+
+            r = RenderJs.Physics.Collisions.checkCollision(poly, poly2, velocity);
+
+            if (r) {
+                console.log(r);
+                //velocity.set(velocity.add(r));
+            }
+
+            //arc.pos.set(arc.pos.add(velocity));
+            poly2.offset(velocity);
+        });
+    }
+    var stage = new RenderJs.Canvas.Stage({
+        container: "viewport",
+        width: 1200,
+        height: 800
+    });
+    var animlayer = stage.createLayer(true);
+    //var staticlayer = stage.createLayer(false);
+    transition(animlayer);
+    //sprite(staticlayer);
+
+</script>
+</body>
+</html>

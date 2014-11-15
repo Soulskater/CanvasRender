@@ -1,0 +1,6 @@
+html { background-color: #e2e2e2; margin: 0; padding: 0; }
+
+body { background-color: #fff; border-top: solid 10px #000; color: #333; font-size: .85em; font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif; margin: 0; padding: 0; }
+
+#viewport { position: relative; border: 1px solid #414141; margin: 20px; }
+    #viewport canvas { position: absolute;  background-color: transparent; }
