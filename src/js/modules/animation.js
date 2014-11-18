@@ -22,19 +22,20 @@ RenderJs.Canvas.Animation = function (handler, layer) {
         started = true;
         stopped = paused = false;
         subscriberId = layer.on("animate", animation);
-    }
+    };
 
     this.reset = function () {
         time = 0;
-    }
+    };
 
     this.pause = function () {
-        if (started)
+        if (started) {
             layer.off('animate', subscriberId);
+        }
 
         started = false;
         paused = true;
-    }
+    };
 
     this.stop = function () {
         if (started) {
@@ -43,5 +44,5 @@ RenderJs.Canvas.Animation = function (handler, layer) {
         }
         started = false;
         stopped = true;
-    }
+    };
 }

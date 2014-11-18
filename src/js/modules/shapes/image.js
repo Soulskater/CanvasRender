@@ -31,16 +31,18 @@ RenderJs.Canvas.Shapes.Image = function (options) {
             self.height = _image.height;
             _loaded = true;
         };
-    }
+    };
 
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     */
     this.draw = function (ctx) {
-        if (!_loaded) return;
+        if (!_loaded) {
+            return;
+        }
 
-        if (!_filterCache)
+        if (!_filterCache) {
             for (var i = 0; i < this.filters.length; i++) {
                 switch (this.filters[i]) {
                     case RenderJs.Canvas.Filters.Blur:
@@ -48,16 +50,19 @@ RenderJs.Canvas.Shapes.Image = function (options) {
                         break;
                 }
             }
-        if (_filterCache)
+        }
+        if (_filterCache) {
             ctx.putImageData(_filterCache, this.pos.x, this.pos.y);
-        else
+        }
+        else {
             ctx.drawImage(_image, this.pos.x, this.pos.y);
+        }
         if (!_cache)
             _filterCache = null;
-    }
+    };
 
     _init.call(this, options);
-}
+};
 
 RenderJs.Canvas.Shapes.Image.prototype = new RenderJs.Canvas.Object();
 RenderJs.Canvas.Shapes.Image.constructor = RenderJs.Canvas.Shapes.Image;

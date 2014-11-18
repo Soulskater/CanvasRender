@@ -35,7 +35,7 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
         maxlevel = maxlevel || 100;
         level = level || 0;
         delta = delta || 25;
-        result = typeof (result) != "undefined" ? result : [];
+        result = typeof (result) !== "undefined" ? result : [];
         reflexVertices = reflexVertices || [];
         steinerPoints = steinerPoints || [];
 
@@ -339,7 +339,7 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
             this.edges.push(p2.sub(p1));
             this.rEdges.push({ p1: new RenderJs.Vector(p1.x, p1.y), p2: new RenderJs.Vector(p2.x, p2.y) });
         }
-    }
+    };
 
     this.getCenter = function () {
         var totalX = 0;
@@ -350,17 +350,17 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
         }
 
         return new RenderJs.Vector(totalX / this.vertices.length, totalY / this.vertices.length);
-    }
+    };
 
     this.offset = function (x, y) {
-        var v = arguments.length == 2 ? new RenderJs.Vector(arguments[0], arguments[1]) : arguments[0];
+        var v = arguments.length === 2 ? new RenderJs.Vector(arguments[0], arguments[1]) : arguments[0];
         this.pos.set(this.pos.add(v));
         for (var i = 0; i < this.vertices.length; i++) {
             var p = this.vertices[i];
             this.vertices[i].set(p.add(v));
         }
         this.subPolys = this.decompose();
-    }
+    };
 
     this.toString = function () {
         var result = "";
@@ -396,6 +396,6 @@ RenderJs.Canvas.Shapes.Polygon = function (options) {
         }
     }
     _init.call(this, options);
-}
+};
 RenderJs.Canvas.Shapes.Polygon.prototype = new RenderJs.Canvas.Object();
 RenderJs.Canvas.Shapes.Polygon.constructor = RenderJs.Canvas.Shapes.Polygon;

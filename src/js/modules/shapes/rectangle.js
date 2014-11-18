@@ -21,22 +21,24 @@ RenderJs.Canvas.Shapes.Rectangle = function (options) {
         this.color = options.color;
         this.fillColor = options.fillColor;
         this.lineWidth = options.lineWidth || 1;
-    }
+    };
     /*
     *Function is called in every frame to redraw itself
     *-ctx is the drawing context from a canvas
     */
     this.draw = function (ctx) {
-        if (this.color)
+        if (this.color) {
             ctx.strokeRect(this.pos.x, this.pos.y, this.width, this.height);
-        if (this.fillColor)
+        }
+        if (this.fillColor) {
             ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+        }
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.fillStyle = this.fillColor;
-    }
+    };
 
     _init.call(this, options);
-}
+};
 RenderJs.Canvas.Shapes.Rectangle.prototype = new RenderJs.Canvas.Object();
 RenderJs.Canvas.Shapes.Rectangle.constructor = RenderJs.Canvas.Shapes.Rectangle;

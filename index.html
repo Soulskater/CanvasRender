@@ -5,33 +5,32 @@
         Canvas Render
     </title>
 
-    <link rel="stylesheet" type="text/css" href="css/home.css">
+    <link rel="stylesheet" type="text/css" href="src/css/home.css">
 
-    <script type="text/javascript" src="packages/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="packages/stats.js/build/stats.min.js"></script>
-    <script type="text/javascript" src="packages/linq-js/dist/linq.js"></script>
-    <script type="text/javascript" src="js/lib/StackBlur.js"></script>
+    <script type="text/javascript" src="src/packages/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="src/packages/stats.js/build/stats.min.js"></script>
+    <script type="text/javascript" src="src/packages/linq-js/dist/linq.js"></script>
+    <script type="text/javascript" src="src/js/lib/StackBlur.js"></script>
 
-    <script type="text/javascript" src="js/modules/utility/linkedlist.js"></script>
-    <script type="text/javascript" src="js/modules/utility/eventmanager.js"></script>
-    <script type="text/javascript" src="js/modules/utility/general.js"></script>
-    <script type="text/javascript" src="js/modules/utility/string.js"></script>
-    <script type="text/javascript" src="js/modules/utility/graphics.js"></script>
-    <script type="text/javascript" src="js/modules/stage.js"></script>
-    <script type="text/javascript" src="js/modules/layer.js"></script>
-    <script type="text/javascript" src="js/modules/render.js"></script>
-    <script type="text/javascript" src="js/modules/filters.js"></script>
-    <script type="text/javascript" src="js/modules/transition.js"></script>
-    <script type="text/javascript" src="js/modules/object.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/line.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/image.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/arc.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/rectangle.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/sprite.js"></script>
-    <script type="text/javascript" src="js/modules/shapes/polygon.js"></script>
-    <script type="text/javascript" src="js/modules/animation.js"></script>
-    <script type="text/javascript" src="js/modules/game/physics.js"></script>
-    <script type="text/javascript" src="js/modules/game/polygonCollision.js"></script>
+    <script type="text/javascript" src="src/js/modules/utility/linkedlist.js"></script>
+    <script type="text/javascript" src="src/js/modules/utility/eventmanager.js"></script>
+    <script type="text/javascript" src="src/js/modules/utility/general.js"></script>
+    <script type="text/javascript" src="src/js/modules/utility/graphics.js"></script>
+    <script type="text/javascript" src="src/js/modules/stage.js"></script>
+    <script type="text/javascript" src="src/js/modules/layer.js"></script>
+    <script type="text/javascript" src="src/js/modules/vector.js"></script>
+    <script type="text/javascript" src="src/js/modules/filters.js"></script>
+    <script type="text/javascript" src="src/js/modules/transition.js"></script>
+    <script type="text/javascript" src="src/js/modules/object.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/line.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/image.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/arc.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/rectangle.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/sprite.js"></script>
+    <script type="text/javascript" src="src/js/modules/shapes/polygon.js"></script>
+    <script type="text/javascript" src="src/js/modules/animation.js"></script>
+    <script type="text/javascript" src="src/js/modules/game/physics.js"></script>
+    <script type="text/javascript" src="src/js/modules/game/polygonCollision.js"></script>
 </head>
 <body>
 <div id="viewport">
@@ -138,10 +137,10 @@
 
     function sprite(llayer) {
         var test = new RenderJs.Canvas.Shapes.Sprite({
-            url: "images/blob-sprite.png",
+            url: "src/images/blob-sprite.png",
             x: 100,
             y: 100,
-            collision: true,
+            collision: false,
             defAnimation: "idle",
             animations: {
                 idle: [
@@ -158,46 +157,26 @@
             },
             frameCount: 7
         });
-        llayer.addShape(test);
+        llayer.addObject(test);
         test.start();
         $(document).click(function () {
-            test.animation("punch");
+            test.setAnimation("punch", false);
         });
     }
 
     function polyTest(layer) {
-        var line = new RenderJs.Canvas.Shapes.Line({
-            x1: 400,
-            y1: 300,
-            x2: 450,
-            y2: 350,
-            color: "#333"
-        });
-
-        var arc = new RenderJs.Canvas.Shapes.Arc({
-            x: 20,
-            y: 30,
-            radius: 50,
-            color: "#333"
-        });
-
-        var arc2 = new RenderJs.Canvas.Shapes.Arc({
-            x: 200,
-            y: 300,
-            radius: 50,
-            color: "#333"
-        });
-
         var poly = new RenderJs.Canvas.Shapes.Polygon({
             x: 0,
             y: 0,
-            points: [new RenderJs.Vector(330, 174),
+            points: [
+                new RenderJs.Vector(330, 174),
                 new RenderJs.Vector(376, 148),
                 new RenderJs.Vector(390, 122),
                 new RenderJs.Vector(419, 142),
                 new RenderJs.Vector(392, 165),
                 new RenderJs.Vector(403, 214),
-                new RenderJs.Vector(360, 187)],
+                new RenderJs.Vector(360, 187)
+            ],
             fillColor: "#333"
         });
         poly.makeCCW();
@@ -205,30 +184,26 @@
         var poly2 = new RenderJs.Canvas.Shapes.Polygon({
             x: 300,
             y: 100,
-            points: [new RenderJs.Vector(100, 0),
+            points: [
+                new RenderJs.Vector(100, 0),
                 new RenderJs.Vector(150, 50),
                 new RenderJs.Vector(100, 150),
-                new RenderJs.Vector(0, 100)],
+                new RenderJs.Vector(0, 100)
+            ],
             fillColor: "#333"
         });
-        //layer.addObject(arc);
-        //layer.addObject(arc2);
         layer.addObject(poly);
         layer.addObject(poly2);
 
         layer.on("mousemove", function (evt, position) {
             var velocity = new RenderJs.Vector(position.x - poly2.pos.x, position.y - poly2.pos.y);
-            //var playerTranslation = new RenderJs.Vector(velocity.x, velocity.y);
-
             r = RenderJs.Physics.Collisions.checkCollision(poly, poly2, velocity);
-
             if (r) {
-                console.log(r);
-                //velocity.set(velocity.add(r));
+                alert("Collision!");
             }
 
             //arc.pos.set(arc.pos.add(velocity));
-            poly2.offset(velocity);
+            poly2.pos.set(velocity);
         });
     }
     var stage = new RenderJs.Canvas.Stage({
@@ -238,7 +213,7 @@
     });
     var animlayer = stage.createLayer(true);
     //var staticlayer = stage.createLayer(false);
-    transition(animlayer);
+    sprite(animlayer);
     //sprite(staticlayer);
 
 </script>

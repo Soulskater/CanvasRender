@@ -65,7 +65,10 @@ RenderJs.Canvas.Object = function () {
     *-t animation time
     */
     this.rotateShape = function (ctx) {
-        if (this.angle == 0) return;
+        if (this.angle === 0)
+        {
+            return;
+        }
         var o = this.getCenter();
         ctx.translate(o.x, o.y);
         ctx.rotate(Utils.convertToRad(this.angle));
@@ -86,20 +89,23 @@ RenderJs.Canvas.Object = function () {
     };
 
     this.on = function (type, handler) {
-        if (!RenderJs.Canvas.Events[type])
+        if (!RenderJs.Canvas.Events[type]) {
             return;
+        }
         _eventManager.subscribe(type, handler);
     };
 
     this.off = function (type, handler) {
-        if (!RenderJs.Canvas.Events[type])
+        if (!RenderJs.Canvas.Events[type]) {
             return;
+        }
         _eventManager.unSubscribe(type, handler);
     };
 
     this.trigger = function (event, args) {
-        if (!RenderJs.Canvas.Events[event])
+        if (!RenderJs.Canvas.Events[event]) {
             return;
+        }
         _eventManager.trigger(event, args);
     };
 }

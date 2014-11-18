@@ -58,28 +58,3 @@ var EventManager;
         return true;
     }
 };
-
-function Observable(initial) {
-
-    var update = function (value) {
-        if (arguments.length > 0) {
-            update._value = arguments[0];
-            for (var i = 0; i < update._subscribers.length; i++) {
-                update._subscribers[i](update._value);
-            }
-        }
-        return update._value;
-    };
-
-    update._value = initial;
-    update._subscribers = [];
-    update.subscribe = function (callback) {
-        update._subscribers.push(callback);
-    };
-
-    update.unSubscribe = function (callback) {
-        update._subscribers.splice(update._subscribers.indexOf(callback), 1);
-    };
-
-    return update;
-}

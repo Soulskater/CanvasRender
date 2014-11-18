@@ -24,7 +24,7 @@ RenderJs.Canvas.Shapes.Line = function (options) {
         this.pos2 = new RenderJs.Vector(options.x2, options.y2);
         this.color = options.color;
         this.lineWidth = options.lineWidth || 1;
-    }
+    };
 
     /*
     *Function is called in every frame to redraw itself
@@ -40,9 +40,9 @@ RenderJs.Canvas.Shapes.Line = function (options) {
         ctx.lineWidth = this.lineWidth;
         ctx.strokeStyle = this.color;
         ctx.stroke();
-    }
+    };
 
     _init.call(this, options);
-}
+};
 RenderJs.Canvas.Shapes.Line.prototype = new RenderJs.Canvas.Object();
 RenderJs.Canvas.Shapes.Line.constructor = RenderJs.Canvas.Shapes.Line;
