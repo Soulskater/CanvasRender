@@ -61,12 +61,19 @@ RenderJs.Vector = function (x, y) {
     };
 
     this.angle = function (v) {
-        return this.dot(v) / (this.length * v.length);
+        return this.dot(v) / (this.length() * v.length());
     };
 
     this.truncate = function (max) {
         var length = Math.min(max, this.length());
         return length;
+    };
+
+    this.rotate = function (angle) {
+        var x = this.x;
+        var y = this.y;
+        this.x = x *  Math.cos(Utils.convertToRad(angle)) - y * Math.sin(Utils.convertToRad(angle));
+        this.y = y *  Math.cos(Utils.convertToRad(angle)) + x * Math.sin(Utils.convertToRad(angle));
     };
 
     this.toString = function (rounded) {
@@ -80,7 +87,7 @@ RenderJs.Vector = function (x, y) {
 
 };
 
-RenderJs.Vector.clone = function (x,y) {
+RenderJs.Vector.clone = function (x, y) {
     return new RenderJs.Vector(x, y);
 };
 
@@ -119,7 +126,8 @@ RenderJs.Vector.sqdist = function (a, b) {
     return dx * dx + dy * dy;
 };
 
-function Scalar() { }
+function Scalar() {
+}
 
 /**
  * Check if two scalars are equal

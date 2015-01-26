@@ -70,6 +70,18 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         }
     };
 
+    var _keydownHandler = function (event) {
+        _eventManager.trigger(RenderJs.Canvas.Events.keydown, event);
+    };
+
+    var _keyupHandler = function (event) {
+        _eventManager.trigger(RenderJs.Canvas.Events.keyup, event);
+    };
+
+    var _keypressHandler = function (event) {
+        _eventManager.trigger(RenderJs.Canvas.Events.keypress, event);
+    };
+
     //Constructor
     var _init = function (container, width, height, active) {
         document.getElementById(container).appendChild(this.canvas);
@@ -93,6 +105,18 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         $(this.canvas).on("mouseleave", function (event, position) {
             _mouseleaveHandler.call(_self, event, position);
         });
+
+        $(document).on("keydown", function (event) {
+            _keydownHandler.call(_self, event);
+        });
+
+        $(document).on("keyup", function (event) {
+            _keyupHandler.call(_self, event);
+        });
+
+        $(document).on("keypress", function (event) {
+            _keypressHandler.call(_self, event);
+        });
     };
 
     //For the linked list
@@ -111,14 +135,6 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
             return;
         }
         return _eventManager.subscribe(type, handler);
-    };
-
-    //Unsubscribe from an event like animate, click, mousemove, mouseenter, mouseleave
-    this.off = function (type, id) {
-        if (!RenderJs.Canvas.Events[type]) {
-            return;
-        }
-        _eventManager.unSubscribe(type, id);
     };
 
     //Add an object to the layer, it will be rendered on this layer

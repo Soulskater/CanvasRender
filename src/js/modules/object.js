@@ -2,20 +2,25 @@
 RenderJs.Canvas = RenderJs.Canvas || {};
 RenderJs.Canvas.Shapes = RenderJs.Canvas.Shapes || {};
 
-RenderJs.Canvas.Events = { animate: "animate", click: "click", mousemove: "mousemove", mousehover: "mousehover", mouseleave: "mouseleave", collision: "collision" };
+RenderJs.Canvas.Events = {
+    animate: "animate",
+    click: "click",
+    keydown: "keydown",
+    keyup: "keyup",
+    keypress: "keypress",
+    mousemove: "mousemove",
+    mousehover: "mousehover",
+    mouseleave: "mouseleave",
+    collision: "collision"
+};
 
 /*
 *Represents a base class for different type of shapes
 */
 RenderJs.Canvas.Object = function () {
-    /*
-     * Locals
-     */
+
     var _eventManager = new EventManager();
 
-    /*
-    *Constructor
-    */
     this._baseInit = function (options) {
         options = options || {};
         this.pos = new RenderJs.Vector(options.x, options.y);
@@ -81,8 +86,8 @@ RenderJs.Canvas.Object = function () {
     *-height scale vertically ratio integer 1 is 100%
     *-t animation time
     */
-    this.scaleShape = function (scaleX, scaleY) {
-        var o = self.getCenter();
+    this.scaleShape = function (ctx, scaleX, scaleY) {
+        var o = this.getCenter();
         ctx.translate(o.x, o.y);
         ctx.scale(scaleX, scaleY);
         ctx.translate(-o.x, -o.y);
@@ -92,14 +97,7 @@ RenderJs.Canvas.Object = function () {
         if (!RenderJs.Canvas.Events[type]) {
             return;
         }
-        _eventManager.subscribe(type, handler);
-    };
-
-    this.off = function (type, handler) {
-        if (!RenderJs.Canvas.Events[type]) {
-            return;
-        }
-        _eventManager.unSubscribe(type, handler);
+        return _eventManager.subscribe(type, handler);
     };
 
     this.trigger = function (event, args) {

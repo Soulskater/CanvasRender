@@ -24,7 +24,7 @@ RenderJs.Canvas.Shapes.Sprite = function (options) {
         frameIndex = 0;
         started = true;
         loop = isLoop;
-        if (!animations[name]){
+        if (!animations[name]) {
             return;
         }
         previous = current;
@@ -37,7 +37,7 @@ RenderJs.Canvas.Shapes.Sprite = function (options) {
     var _init = function (options) {
         var self = this;
 
-        var options = options || {};
+        options = options || {};
         this._baseInit(options);
 
         frameCount = options.frameCount;
@@ -63,6 +63,23 @@ RenderJs.Canvas.Shapes.Sprite = function (options) {
         return false;
     };
 
+    /* this.getCenter = function () {
+     var currentFrame = current[frameIndex];
+
+     return new RenderJs.Vector(this.pos.x + currentFrame[0] + (52 / 2), this.pos.y + currentFrame[1] + (44 / 2));
+     };*/
+
+    this.rotateShape = function (ctx) {
+        if (this.angle === 0) {
+            return;
+        }
+        var defFrame = animations[defAnimation][0];
+        var o = new RenderJs.Vector(this.pos.x + (defFrame[2] / 2), this.pos.y + (defFrame[3] / 2));
+        ctx.translate(o.x, o.y);
+        ctx.rotate(Utils.convertToRad(this.angle));
+        ctx.translate(-o.x, -o.y);
+    };
+
     /*
      *Function is called in every frame to redraw itself
      *-ctx is the drawing context from a canvas
@@ -72,14 +89,22 @@ RenderJs.Canvas.Shapes.Sprite = function (options) {
             return;
         }
 
-        var aktFrame = frameIndex * 4;
+        if (this.angle !== 0) {
+            ctx.save();
+            this.rotateShape(ctx);
+        }
 
-        ctx.drawImage(image, current[aktFrame], current[aktFrame + 1], current[aktFrame + 2], current[aktFrame + 3], this.pos.x, this.pos.y, current[aktFrame + 2], current[aktFrame + 3]);
-        if (frame.time % frameCount === 0) {
-            frameIndex = (frameIndex * 4 + 4) > current.length - 1 ? 0 : frameIndex + 1;
+        var currentFrame = current[frameIndex];
+
+        ctx.drawImage(image, currentFrame[0], currentFrame[1], currentFrame[2], currentFrame[3], this.pos.x, this.pos.y, currentFrame[2], currentFrame[3]);
+        if (Math.floor(frame.time) % frameCount === 0) {
+            frameIndex = frameIndex >= current.length - 1 ? 0 : frameIndex + 1;
             if (frameIndex === 0 && !loop) {
                 animation(defAnimation, true);
             }
+        }
+        if (this.angle !== 0) {
+            ctx.restore();
         }
     };
 

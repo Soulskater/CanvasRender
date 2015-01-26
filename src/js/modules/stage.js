@@ -6,42 +6,33 @@ RenderJs.Canvas.Stage = function (options) {
      * Locals
      */
     var _container = "viewport";
-    var _FPS = 60;
+    var _currentFps = 0;
     var _eventManager = new EventManager();
-    var _stats = new Stats();
 
     var _invalidate = function () {
         var self = this;
-        _stats.begin();
+        _currentFps = Utils.getFps();
+        //_fpsStat.text(Math.floor(_currentFps));
+
         var enumerator = this.layers.getEnumerator();
         while (enumerator.next() !== undefined) {
-            enumerator.current().drawObjects(_FPS);
+            enumerator.current().drawObjects(_currentFps);
         }
 
         requestAnimationFrame(function () {
             _invalidate.call(self);
         });
-        _stats.end();
     };
 
     this.layers = new LinkedList();
     this.width = 1200;
     this.height = 800;
+    this.position = RenderJs.Vector(0, 0);
 
-    /*
-     * Constructor
-     */
     var _init = function (options) {
-        _container = options.container || "viewport";
-        _stats.setMode(0);
+        _container = options.container || _container;
         this.width = options.width || 1200;
         this.height = options.height || 800;
-        //
-        //Set stats
-        _stats.domElement.style.position = 'absolute';
-        _stats.domElement.style.left = '0px';
-        _stats.domElement.style.top = '0px';
-        document.body.appendChild(_stats.domElement);
 
         document.getElementById(_container).style.width = this.width + "px";
         document.getElementById(_container).style.height = this.height + "px";

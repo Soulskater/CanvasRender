@@ -4,7 +4,7 @@ RenderJs.Canvas = RenderJs.Canvas || {};
 RenderJs.Canvas.Animation = function (handler, layer) {
 
     var time = 0;
-    var subscriberId = 0;
+    var subscriber;
     var started = false;
     var stopped = false;
     var paused = false;
@@ -19,9 +19,12 @@ RenderJs.Canvas.Animation = function (handler, layer) {
     };
 
     this.start = function () {
+        if(started){
+            return;
+        }
         started = true;
         stopped = paused = false;
-        subscriberId = layer.on("animate", animation);
+        subscriber = layer.on("animate", animation);
     };
 
     this.reset = function () {
@@ -29,8 +32,8 @@ RenderJs.Canvas.Animation = function (handler, layer) {
     };
 
     this.pause = function () {
-        if (started) {
-            layer.off('animate', subscriberId);
+        if (started && subscriber) {
+            subscriber();
         }
 
         started = false;
@@ -38,9 +41,9 @@ RenderJs.Canvas.Animation = function (handler, layer) {
     };
 
     this.stop = function () {
-        if (started) {
+        if (started && subscriber) {
             this.reset();
-            layer.off("animate", subscriberId);
+            subscriber();
         }
         started = false;
         stopped = true;
