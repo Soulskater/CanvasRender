@@ -394,6 +394,8 @@ RenderJs.Physics.Collisions = (function (module) {
             p.y <= r.y + r.height);
     }
 
+    module.AabbCollision = _rectVsRect;
+
     module.pointInObject = function (p, obj) {
         if (obj instanceof RenderJs.Canvas.Shapes.Rectangle)
             return _pointInRectangle(p, obj);

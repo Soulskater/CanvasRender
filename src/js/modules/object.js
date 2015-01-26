@@ -11,18 +11,20 @@ RenderJs.Canvas.Events = {
     mousemove: "mousemove",
     mousehover: "mousehover",
     mouseleave: "mouseleave",
-    collision: "collision"
+    collision: "collision",
+    objectChanged: "objectChanged"
 };
 
 /*
-*Represents a base class for different type of shapes
-*/
+ *Represents a base class for different type of shapes
+ */
 RenderJs.Canvas.Object = function () {
 
     var _eventManager = new EventManager();
 
     this._baseInit = function (options) {
         options = options || {};
+        this.id = Utils.getGuid();
         this.pos = new RenderJs.Vector(options.x, options.y);
         this.width = options.width || 0;
         this.height = options.height || 0;
@@ -34,18 +36,19 @@ RenderJs.Canvas.Object = function () {
         this.filters = [];
         this.layer = null;
         this.loaded = true;
+        this.visible = false;
     };
     /*
-    *Returns with the center point of the shape
-    */
+     *Returns with the center point of the shape
+     */
     this.getCenter = function () {
         return new RenderJs.Vector(this.pos.x + (this.width) / 2, this.pos.y + (this.height) / 2);
     };
     /*
-    *Returns with the rect around the shape
-    */
+     *Returns with the rect around the shape
+     */
     this.getRect = function () {
-        return new RenderJs.Rect(this.pos.x, this.pos.y, this.width, this.height);
+        return {x: this.pos.x, y: this.pos.y, width: this.width, height: this.height};
     };
     /*
      * Filters which will be applied on the object(blur, greyscale etc...)
@@ -53,25 +56,23 @@ RenderJs.Canvas.Object = function () {
     this.setfilters = function (filters) {
         this.filters = filters;
     };
-    /*
-    *Move the shape with the given distances in pixels, during the time
-    *-dX move horizontally
-    *-dY move vertically
-    *-f move function
-    *-t animation time
-    */
-    this.moveShape = function (dX, dY) {
-        this.pos = this.pos.add(dX, dY);
+
+    this.updatePosition = function (dX, dY) {
+        var prevPos = RenderJs.Vector.clone(this.pos.x, this.pos.y);
+        var newPos = this.pos.add(new RenderJs.Vector(dX, dY));
+        this.pos = newPos;
+        if(prevPos.x !== newPos.x || prevPos.y !== newPos.y) {
+            this.trigger(RenderJs.Canvas.Events.objectChanged, this);
+        }
     };
 
     /*
-    *Rotate the shape to the given degree, during the time
-    *-deg rotation angle
-    *-t animation time
-    */
+     *Rotate the shape to the given degree, during the time
+     *-deg rotation angle
+     *-t animation time
+     */
     this.rotateShape = function (ctx) {
-        if (this.angle === 0)
-        {
+        if (this.angle === 0) {
             return;
         }
         var o = this.getCenter();
@@ -81,11 +82,11 @@ RenderJs.Canvas.Object = function () {
     };
 
     /*
-    *Scale the shape with the given width and height, during the time
-    *-width scale horizontally ratio integer 1 is 100%
-    *-height scale vertically ratio integer 1 is 100%
-    *-t animation time
-    */
+     *Scale the shape with the given width and height, during the time
+     *-width scale horizontally ratio integer 1 is 100%
+     *-height scale vertically ratio integer 1 is 100%
+     *-t animation time
+     */
     this.scaleShape = function (ctx, scaleX, scaleY) {
         var o = this.getCenter();
         ctx.translate(o.x, o.y);

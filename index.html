@@ -40,10 +40,10 @@
 </div>
 <script>
     function sprite(layer) {
-        var test = new RenderJs.Canvas.Shapes.Sprite({
+        var spriteObj = new RenderJs.Canvas.Shapes.Sprite({
             url: "src/images/ship-sprite.png",
-            x: 100,
-            y: 100,
+            x: Math.floor((Math.random() * 1000) + 1),
+            y: Math.floor((Math.random() * 500) + 1),
             angle: 0,
             collision: false,
             defAnimation: "idle",
@@ -60,9 +60,60 @@
             },
             frameCount: 6
         });
-        layer.addObject(test);
-        test.start();
-        return test;
+        layer.addObject(spriteObj);
+        spriteObj.start();
+        var a = 0;
+        var angle = 0;
+        var frict = 0;
+        layer.on(RenderJs.Canvas.Events.keydown, function (event) {
+            switch (event.keyCode) {
+                case 38:
+                    frict = 0;
+                    a = -0.5;
+                    spriteObj.setAnimation("move", true);
+                    break;
+                case 40:
+                    frict = 0;
+                    a = 0.5;
+                    spriteObj.setAnimation("move", true);
+                    break;
+                case 37:
+                    angle = -0.25;
+                    break;
+                case 39:
+                    angle = 0.25;
+                    break;
+            }
+        });
+
+        layer.on(RenderJs.Canvas.Events.keyup, function (event) {
+            if (event.keyCode === 38 || event.keyCode === 40) {
+//                if (event.keyCode === 38)
+//                    frict = -0.005;
+//                else
+//                    frict = 0.005;
+                a = 0;
+                spriteObj.setAnimation("idle", true);
+            }
+            if (event.keyCode === 37 || event.keyCode === 39) {
+                angle = 0;
+            }
+        });
+        var anim = new RenderJs.Canvas.Animation(function (frameData) {
+            if ((a > 0 && frict < 0) || (a < 0 && frict > 0)) {
+                a = 0;
+                frict = 0;
+            }
+            else {
+                a -= frict;
+            }
+            spriteObj.angle += (angle * (frameData.time - frameData.lastTime));
+            var dx = (a * (frameData.time - frameData.lastTime)) * Math.sin(Utils.convertToRad(spriteObj.angle * -1));
+            var dy = (a * (frameData.time - frameData.lastTime)) * Math.cos(Utils.convertToRad(spriteObj.angle * -1));
+            spriteObj.updatePosition(dx, dy);
+        }, layer);
+        anim.start();
+        return spriteObj;
     }
 
     var stage = new RenderJs.Canvas.Stage({
@@ -71,56 +122,10 @@
         height: 800
     });
     var animlayer = stage.createLayer(true);
-    var spriteObj = sprite(animlayer);
-    var a = 0;
-    var angle = 0;
-    var frict = 0;
-    animlayer.on(RenderJs.Canvas.Events.keydown, function (event) {
-        switch (event.keyCode) {
-            case 38:
-                frict = 0;
-                a = -0.5;
-                spriteObj.setAnimation("move", true);
-                break;
-            case 40:
-                frict = 0;
-                a = 0.5;
-                spriteObj.setAnimation("move", true);
-                break;
-            case 37:
-                angle = -0.25;
-                break;
-            case 39:
-                angle = 0.25;
-                break;
-        }
-    });
+    for (var i = 0; i < 500; i++) {
+        sprite(animlayer);
+    }
 
-    animlayer.on(RenderJs.Canvas.Events.keyup, function (event) {
-        if (event.keyCode === 38 || event.keyCode === 40) {
-            if (event.keyCode === 38)
-                frict = -0.005;
-            else
-                frict = 0.005;
-            spriteObj.setAnimation("idle", true);
-        }
-        if (event.keyCode === 37 || event.keyCode === 39) {
-            angle = 0;
-        }
-    });
-    var anim = new RenderJs.Canvas.Animation(function (frameData) {
-        if ((a > 0 && frict < 0) || (a < 0 && frict > 0)) {
-            a = 0;
-            frict = 0;
-        }
-        else {
-            a -= frict;
-        }
-        spriteObj.angle += (angle * (frameData.time - frameData.lastTime));
-        spriteObj.pos.x += (a * (frameData.time - frameData.lastTime)) * Math.sin(Utils.convertToRad(spriteObj.angle * -1));
-        spriteObj.pos.y += (a * (frameData.time - frameData.lastTime)) * Math.cos(Utils.convertToRad(spriteObj.angle * -1));
-    }, animlayer);
-    anim.start();
 
 </script>
 </body>

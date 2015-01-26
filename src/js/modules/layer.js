@@ -9,6 +9,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
     var _initialized = false;
     var _eventManager = new EventManager();
     var _time = 0;
+    var _rect;
 
     //Click internal event handler
     var _clickHandler = function (event, position) {
@@ -88,6 +89,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         this.canvas.width = width;
         this.canvas.height = height;
         this.active = active;
+        _rect = {x: 0, y: 0, width: width, height: height};
         //
         //Event wireups
         $(this.canvas).on("click", function (event, position) {
@@ -125,6 +127,8 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
     //Array of objects on the layer
     this.objects = [];
+    this.visibleObjects = [];
+
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
     this.active = false;
@@ -145,6 +149,27 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         }
         object.layer = this;
         this.objects.push(object);
+        this.isObjectVisible(object);
+        var self = this;
+        /*object.on(RenderJs.Canvas.Events.objectChanged, function (obj) {
+            self.isObjectVisible(obj);
+        });*/
+    };
+
+    this.isObjectVisible = function (object) {
+        var rect = object.getRect();
+        if (RenderJs.Physics.Collisions.AabbCollision(_rect, rect)) {
+            if (!object.visible) {
+                this.visibleObjects.push(object);
+                object.visible = true;
+            }
+        }
+        else {
+            if (object.visible) {
+                this.visibleObjects.splice(this.visibleObjects.indexOf(object), 1);
+                object.visible = false;
+            }
+        }
     };
 
     //Returns true if the layer has sprite objects otherwise false
@@ -159,8 +184,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
     //Redraw objects on layers if it's active
     this.drawObjects = function (frame) {
-        if ((_initialized && !_eventManager.hasSubscribers('animate') && !this.hasSprites(this) && !this.active) || this.objects.length === 0)
-        {
+        if ((_initialized && !_eventManager.hasSubscribers('animate') && !this.hasSprites(this) && !this.active) || this.objects.length === 0) {
             return;
         }
 
@@ -170,32 +194,16 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
         _eventManager.trigger("animate", frame);
         var objectsLoaded = true;
-        for (var i = 0, length = this.objects.length; i < length; i++) {
-            if (!this.objects[i].loaded) {
+        //console.log(this.visibleObjects.length);
+        for (var i = 0, length = this.visibleObjects.length; i < length; i++) {
+            if (!this.visibleObjects[i].loaded) {
                 objectsLoaded = false;
             }
-            this.objects[i].draw(this.ctx, {
+            this.visibleObjects[i].draw(this.ctx, {
                 frameRate: frame,
                 lastTime: _time,
                 time: _time + aktFrameRate
             });
-            //
-            //Collision detection
-            var collisionObjects = [];
-            for (var j = 0, jl = this.objects.length; j < jl; j++) {
-                if (this.objects[j].collision && i !== j) {
-                    collisionObjects.push(this.objects[j]);
-                }
-            }
-
-            if (this.objects[i].collision) {
-                for (var k = 0, kl = collisionObjects.length; k < kl; k++) {
-                    if (RenderJs.Physics.Collisions.checkCollision(this.objects[i], collisionObjects[k])) {
-                        this.objects[i].trigger(RenderJs.Canvas.Events.collision, collisionObjects[k]);
-                        collisionObjects[k].trigger(RenderJs.Canvas.Events.collision, this.objects[i]);
-                    }
-                }
-            }
         }
         if (objectsLoaded)
             _initialized = true;

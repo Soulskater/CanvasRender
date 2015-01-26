@@ -63,6 +63,11 @@ RenderJs.Canvas.Shapes.Sprite = function (options) {
         return false;
     };
 
+    this.getRect = function () {
+        var defFrame = animations[defAnimation][0];
+        return {x: this.pos.x, y: this.pos.y, width: defFrame[2], height: defFrame[3]};
+    };
+
     /* this.getCenter = function () {
      var currentFrame = current[frameIndex];
 
