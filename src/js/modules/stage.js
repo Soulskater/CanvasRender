@@ -27,7 +27,7 @@ RenderJs.Canvas.Stage = function (options) {
     this.layers = new LinkedList();
     this.width = 1200;
     this.height = 800;
-    this.position = RenderJs.Vector(0, 0);
+    this.position = RenderJs.Vector(50, 50);
 
     var _init = function (options) {
         _container = options.container || _container;

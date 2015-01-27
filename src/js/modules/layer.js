@@ -89,7 +89,7 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         this.canvas.width = width;
         this.canvas.height = height;
         this.active = active;
-        _rect = {x: 0, y: 0, width: width, height: height};
+        _rect = {x: width / 2, y: height / 2, width: width / 2, height: height / 2};
         //
         //Event wireups
         $(this.canvas).on("click", function (event, position) {
@@ -127,7 +127,6 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
     //Array of objects on the layer
     this.objects = [];
-    this.visibleObjects = [];
 
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
@@ -149,27 +148,6 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
         }
         object.layer = this;
         this.objects.push(object);
-        this.isObjectVisible(object);
-        var self = this;
-        /*object.on(RenderJs.Canvas.Events.objectChanged, function (obj) {
-            self.isObjectVisible(obj);
-        });*/
-    };
-
-    this.isObjectVisible = function (object) {
-        var rect = object.getRect();
-        if (RenderJs.Physics.Collisions.AabbCollision(_rect, rect)) {
-            if (!object.visible) {
-                this.visibleObjects.push(object);
-                object.visible = true;
-            }
-        }
-        else {
-            if (object.visible) {
-                this.visibleObjects.splice(this.visibleObjects.indexOf(object), 1);
-                object.visible = false;
-            }
-        }
     };
 
     //Returns true if the layer has sprite objects otherwise false
@@ -194,12 +172,11 @@ RenderJs.Canvas.Layer = function (container, width, height, active) {
 
         _eventManager.trigger("animate", frame);
         var objectsLoaded = true;
-        //console.log(this.visibleObjects.length);
-        for (var i = 0, length = this.visibleObjects.length; i < length; i++) {
-            if (!this.visibleObjects[i].loaded) {
+        for (var i = 0, length = this.objects.length; i < length; i++) {
+            if (!this.objects[i].loaded) {
                 objectsLoaded = false;
             }
-            this.visibleObjects[i].draw(this.ctx, {
+            this.objects[i].draw(this.ctx, {
                 frameRate: frame,
                 lastTime: _time,
                 time: _time + aktFrameRate

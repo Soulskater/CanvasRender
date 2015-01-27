@@ -47,8 +47,9 @@ RenderJs.Canvas.Object = function () {
     /*
      *Returns with the rect around the shape
      */
-    this.getRect = function () {
-        return {x: this.pos.x, y: this.pos.y, width: this.width, height: this.height};
+    this.getCenteredRect = function () {
+        var o = this.pos;
+        return {x: o.x, y: o.y, width: this.width, height: this.height};
     };
     /*
      * Filters which will be applied on the object(blur, greyscale etc...)
@@ -61,7 +62,7 @@ RenderJs.Canvas.Object = function () {
         var prevPos = RenderJs.Vector.clone(this.pos.x, this.pos.y);
         var newPos = this.pos.add(new RenderJs.Vector(dX, dY));
         this.pos = newPos;
-        if(prevPos.x !== newPos.x || prevPos.y !== newPos.y) {
+        if (prevPos.x !== newPos.x || prevPos.y !== newPos.y) {
             this.trigger(RenderJs.Canvas.Events.objectChanged, this);
         }
     };

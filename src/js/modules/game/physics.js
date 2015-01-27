@@ -47,12 +47,18 @@ RenderJs.Physics.Collisions = (function (module) {
         var dp = point.dot(line);
         // If the point is beyond the start of the line, it is in the
         // left vornoi region.
-        if (dp < 0) { return -1; }
-            // If the point is beyond the end of the line, it is in the
-            // right vornoi region.
-        else if (dp > len2) { return 1; }
-            // Otherwise, it's in the middle one.
-        else { return 0; }
+        if (dp < 0) {
+            return -1;
+        }
+        // If the point is beyond the end of the line, it is in the
+        // right vornoi region.
+        else if (dp > len2) {
+            return 1;
+        }
+        // Otherwise, it's in the middle one.
+        else {
+            return 0;
+        }
     }
 
     var _pointInPolygon = function (p, polygon) {
@@ -389,12 +395,19 @@ RenderJs.Physics.Collisions = (function (module) {
 
     var _pointInRectangle = function (p, r) {
         return (p.x >= r.x &&
-            p.x <= r.x + r.width &&
-            p.y >= r.y &&
-            p.y <= r.y + r.height);
+        p.x <= r.x + r.width &&
+        p.y >= r.y &&
+        p.y <= r.y + r.height);
     }
 
-    module.AabbCollision = _rectVsRect;
+    module.AabbCollision = function (rectA, rectB) {
+        if (Math.abs(rectA.x - rectB.x) < rectA.width + rectB.width) {
+            if (Math.abs(rectA.y - rectB.y) < rectA.height + rectB.height) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     module.pointInObject = function (p, obj) {
         if (obj instanceof RenderJs.Canvas.Shapes.Rectangle)
