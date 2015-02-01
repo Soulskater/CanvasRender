@@ -10,12 +10,16 @@
     <script type="text/javascript" src="src/packages/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="src/packages/stats.js/build/stats.min.js"></script>
     <script type="text/javascript" src="src/packages/linq-js/dist/linq.js"></script>
+    <script type="text/javascript" src="src/packages/dependency-injection/dist/di-js.js"></script>
+    <script type="text/javascript" src="src/packages/event-js/dist/eventDispatcher.js"></script>
     <script type="text/javascript" src="src/js/lib/StackBlur.js"></script>
+    <script type="text/javascript" src="dist/canvasRender.js"></script>
 
-    <script type="text/javascript" src="src/js/modules/utility/linkedlist.js"></script>
-    <script type="text/javascript" src="src/js/modules/utility/eventmanager.js"></script>
+   <!-- <script type="text/javascript" src="src/js/modules/utility/linkedlist.js"></script>
+    <script type="text/javascript" src="src/js/modules/utility/eventdispatcher.js"></script>
     <script type="text/javascript" src="src/js/modules/utility/general.js"></script>
     <script type="text/javascript" src="src/js/modules/utility/graphics.js"></script>
+    <script type="text/javascript" src="src/js/main.js"></script>
     <script type="text/javascript" src="src/js/modules/stage.js"></script>
     <script type="text/javascript" src="src/js/modules/layer.js"></script>
     <script type="text/javascript" src="src/js/modules/vector.js"></script>
@@ -30,7 +34,7 @@
     <script type="text/javascript" src="src/js/modules/shapes/polygon.js"></script>
     <script type="text/javascript" src="src/js/modules/animation.js"></script>
     <script type="text/javascript" src="src/js/modules/game/physics.js"></script>
-    <script type="text/javascript" src="src/js/modules/game/polygonCollision.js"></script>
+    <script type="text/javascript" src="src/js/modules/game/polygonCollision.js"></script>-->
 </head>
 <body>
 <div style="display: inline-block;" id="viewport">
@@ -60,8 +64,8 @@
     function sprite(layer) {
         var spriteObj = new RenderJs.Canvas.Shapes.Sprite({
             url: "src/images/ship-sprite.png",
-            x: 100,//Math.floor((Math.random() * 1000) + 1),
-            y: 100,//Math.floor((Math.random() * 500) + 1),
+            x: 500,//Math.floor((Math.random() * 1000) + 1),
+            y: 400,//Math.floor((Math.random() * 500) + 1),
             angle: 0,
             collision: false,
             defAnimation: "idle",
@@ -129,6 +133,23 @@
             var dx = (a * (frameData.time - frameData.lastTime)) * Math.sin(Utils.convertToRad(spriteObj.angle * -1));
             var dy = (a * (frameData.time - frameData.lastTime)) * Math.cos(Utils.convertToRad(spriteObj.angle * -1));
             spriteObj.updatePosition(dx, dy);
+
+
+            var pos = spriteObj.pos.sub(stage.position);
+            //
+            //Follow object
+            if (pos.x >= 1000 && dx > 0) {
+                stage.position = stage.position.add(new RenderJs.Vector(dx, 0));
+            }
+            if (pos.x <= 200 && dx < 0) {
+                stage.position = stage.position.add(new RenderJs.Vector(dx, 0));
+            }
+            if (pos.y <= 200 && dy < 0) {
+                stage.position = stage.position.add(new RenderJs.Vector(0, dy));
+            }
+            if (pos.y >= 600 && dy > 0) {
+                stage.position = stage.position.add(new RenderJs.Vector(0, dy));
+            }
         }, layer);
         anim.start();
         return spriteObj;

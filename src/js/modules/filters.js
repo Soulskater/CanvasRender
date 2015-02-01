@@ -1,7 +1,4 @@
-﻿var RenderJs = RenderJs || {};
-RenderJs.Canvas = RenderJs.Canvas || {};
-
-RenderJs.Canvas.Filters = RenderJs.Canvas.Filters || {};
+﻿registerNamespace("RenderJs.Canvas.Filters");
 
 RenderJs.Canvas.Filters.Convolute = function (image, weights, opaque) {
     var side = Math.round(Math.sqrt(weights.length));

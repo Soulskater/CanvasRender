@@ -1,0 +1,38 @@
+{
+  "name": "CanvasRender",
+  "version": "0.5.0",
+  "homepage": "https://github.com/Soulskater/CanvasRender",
+  "authors": [
+    "Soulskater <gmeszaros007@gmail.com>"
+  ],
+  "description": "Canvas rendering engine with animations, transitions, filters",
+  "keywords": [
+    "canvas",
+    "render",
+    "renderengine",
+    "engine",
+    "javascript",
+    "animation",
+    "transitions",
+    "game"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/packages",
+    "src/images",
+    "src/css",
+    "src/fonts",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "dependency-injection": "*",
+    "event-js": "*",
+    "jquery": "~2.1.1",
+    "linq-js": "*",
+    "stats.js": "*"
+  }
+}
