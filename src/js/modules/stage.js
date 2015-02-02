@@ -4,7 +4,6 @@ RenderJs.Canvas.Stage = inject("Utils", "EventDispatcher", "LinkedList")
     .class(function (utils, dispatcher, linkedList, options) {
 
         var _container = options.container || "viewport";
-        var _currentFps = 0;
         var _dispatcher = new dispatcher();
         this.layers = new linkedList();
 
@@ -12,11 +11,10 @@ RenderJs.Canvas.Stage = inject("Utils", "EventDispatcher", "LinkedList")
 
         var _invalidate = function () {
             var self = this;
-            _currentFps = utils.getFps();
 
             var enumerator = this.layers.getEnumerator();
             while (enumerator.next() !== undefined) {
-                enumerator.current().drawObjects(_currentFps, this.position);
+                enumerator.current().drawObjects(this.position);
             }
 
             requestAnimationFrame(function () {

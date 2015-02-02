@@ -22,6 +22,15 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
         //Array of objects on the layer
         this.objects = [];
 
+        var lastUpdate;
+
+        var getFps = function () {
+            var now = new Date();
+            var fps = 1000 / (now - lastUpdate);
+            //fps += (thisFrameFPS - fps) / refFps;
+            lastUpdate = now;
+            return fps;
+        };
 
         var _clickHandler = function (event, position) {
             position = position || Utils.getMousePos(event.target, event);
@@ -161,23 +170,27 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
         };
 
         //Redraw objects on layers if it's active
-        this.drawObjects = function (frame, absPosition) {
+        this.drawObjects = function (absPosition) {
+            if (!lastUpdate) {
+                lastUpdate = (new Date()) * 1 - 1;
+            }
             if (!_forceRender && ((_initialized && !_dispatcher.hasSubscribers('animate') && !this.hasSprites(this) && !this.active) || this.objects.length === 0)) {
                 return;
             }
 
+            var fps = getFps();
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-            var aktFrameRate = Math.floor(1000 / frame);
+            var aktFrameRate = Math.floor(1000 / fps);
 
-            _dispatcher.trigger("animate", frame);
+            _dispatcher.trigger("animate", fps);
             var objectsLoaded = true;
             for (var i = 0, length = this.objects.length; i < length; i++) {
                 if (!this.objects[i].loaded) {
                     objectsLoaded = false;
                 }
                 this.objects[i].draw(this.ctx, {
-                    frameRate: frame,
+                    frameRate: fps,
                     lastTime: _time,
                     time: _time + aktFrameRate
                 }, absPosition);

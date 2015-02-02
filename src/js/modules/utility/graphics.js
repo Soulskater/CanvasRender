@@ -4,7 +4,6 @@
     module.convertToRad = function (deg) {
         return deg * (Math.PI / 180);
     };
-    var lastUpdate = (new Date) * 1 - 1;
 
     module.getMousePos = function (canvas, evt) {
         var rect = canvas.getBoundingClientRect();
@@ -36,15 +35,6 @@
             ctx.drawImage(img, 0, 0);
         }
         return ctx.getImageData(0, 0, c.width, c.height);
-    }
-
-    module.getFps = function () {
-        var now = new Date;
-        var fps = 1000 / (now - lastUpdate);
-        //fps += (thisFrameFPS - fps) / refFps;
-        lastUpdate = now;
-
-        return fps;
     }
 
     return module;
