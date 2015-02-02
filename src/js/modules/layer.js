@@ -5,6 +5,7 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
 
         var _self = this;
         var _initialized = false;
+        var _forceRender = false;
         var _dispatcher = new dispatcher();
         var _time = 0;
 
@@ -135,6 +136,20 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
             this.objects.push(object);
         };
 
+        this.removeObject = function (object) {
+            linq(this.objects).remove(function (item) {
+                return item === object;
+            });
+            object.dispose();
+            _forceRender = true;
+        };
+
+        this.resize = function (width, height) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+            _forceRender = true;
+        };
+
         //Returns true if the layer has sprite objects otherwise false
         this.hasSprites = function () {
             for (var i = 0, length = this.objects.length; i < length; i++) {
@@ -147,7 +162,7 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
 
         //Redraw objects on layers if it's active
         this.drawObjects = function (frame, absPosition) {
-            if ((_initialized && !_dispatcher.hasSubscribers('animate') && !this.hasSprites(this) && !this.active) || this.objects.length === 0) {
+            if (!_forceRender && ((_initialized && !_dispatcher.hasSubscribers('animate') && !this.hasSprites(this) && !this.active) || this.objects.length === 0)) {
                 return;
             }
 
@@ -169,6 +184,9 @@ RenderJs.Canvas.Layer = inject("Utils", "EventDispatcher", "jQuery")
             }
             if (objectsLoaded)
                 _initialized = true;
+            if (_forceRender) {
+                _forceRender = false;
+            }
             _time += aktFrameRate;
         };
     });

@@ -7,11 +7,8 @@ RenderJs.Canvas.Stage = inject("Utils", "EventDispatcher", "LinkedList")
         var _currentFps = 0;
         var _dispatcher = new dispatcher();
         this.layers = new linkedList();
-        this.width = options.width || 1200;
-        this.height = options.height || 800;
+
         this.position = new RenderJs.Vector(-50, -50);
-        document.getElementById(_container).style.width = this.width + "px";
-        document.getElementById(_container).style.height = this.height + "px";
 
         var _invalidate = function () {
             var self = this;
@@ -28,6 +25,17 @@ RenderJs.Canvas.Stage = inject("Utils", "EventDispatcher", "LinkedList")
         };
         _invalidate.call(this);
 
+        this.resize = function (width, height) {
+            this.width = width;
+            this.height = height;
+            document.getElementById(_container).style.width = this.width + "px";
+            document.getElementById(_container).style.height = this.height + "px";
+            var enumerator = this.layers.getEnumerator();
+            while (enumerator.next() !== undefined) {
+                enumerator.current().resize(width, height);
+            }
+        };
+
         this.onInvalidate = function (handler) {
             return _dispatcher.subscribe("onInvalidate", handler);
         };
@@ -38,4 +46,6 @@ RenderJs.Canvas.Stage = inject("Utils", "EventDispatcher", "LinkedList")
 
             return layer;
         };
+
+        this.resize(options.width || 1200, options.height || 800);
     });

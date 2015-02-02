@@ -57,7 +57,7 @@ RenderJs.Canvas.Object = inject("EventDispatcher", "jQuery", "Utils")
 
         this.updatePosition = function (dX, dY) {
             var prevPos = RenderJs.Vector.clone(this.pos.x, this.pos.y);
-            var newPos = this.pos.add(new RenderJs.Vector(dX, dY));
+            var newPos = this.pos.add(new RenderJs.Vector(Math.floor(dX), Math.floor(dY)));
             this.pos = newPos;
             if (prevPos.x !== newPos.x || prevPos.y !== newPos.y) {
                 this.trigger(RenderJs.Canvas.Events.objectChanged, this);
@@ -104,5 +104,9 @@ RenderJs.Canvas.Object = inject("EventDispatcher", "jQuery", "Utils")
                 return;
             }
             this.dispatcher.trigger(event, args);
+        };
+
+        this.dispose = function () {
+            this.dispatcher.dispose();
         };
     });
