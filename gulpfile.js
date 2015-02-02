@@ -10,7 +10,7 @@ var del = require('del');
 
 
 var paths = {
-    scripts: ['src/js/modules/utility/*.js', 'src/js/**/*.js', '!src/js/lib/**/*.js']
+    scripts: ['src/js/modules/utility/*.js', 'src/js/**/*.js', '!src/js/lib/**/*.js', '!src/js/registerTypes.js']
 };
 
 gulp.task('clean', function (cb) {
